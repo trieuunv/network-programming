@@ -15,7 +15,6 @@ class MulticastRoomServer(private val port: Int = 9876) {
     @Volatile private var isRunning = false
     private var socket: DatagramSocket? = null
 
-    // BẢNG ĐĂNG KÝ: Username -> (Address, Port)
     private val clientRegistry = ConcurrentHashMap<String, Pair<InetAddress, Int>>()
 
     fun start() {
@@ -30,7 +29,6 @@ class MulticastRoomServer(private val port: Int = 9876) {
                     val packet = DatagramPacket(buffer, buffer.size)
                     socket!!.receive(packet)
 
-                    // Phân tích cú pháp: [LỆNH]:[DỮ LIỆU]
                     val fullMessage = String(packet.data, 0, packet.length).trim()
                     val parts = fullMessage.split(":", limit = 2)
                     val command = parts[0].uppercase()
@@ -87,19 +85,16 @@ class MulticastRoomServer(private val port: Int = 9876) {
 
         when (command) {
             "JOIN" -> {
-                // data = [USERNAME]
                 if (data.isBlank()) {
                     sendResponse(socket, clientAddress, clientPort, "ERROR:Thiếu Username")
                     return
                 }
 
-                // Kiểm tra username đã tồn tại
                 if (clientRegistry.containsKey(data)) {
                     sendResponse(socket, clientAddress, clientPort, "ERROR:Username '$data' đã được sử dụng")
                     return
                 }
 
-                // Đăng ký Client và gửi thông tin Multicast
                 clientRegistry[data] = Pair(clientAddress, clientPort)
                 val response = "ROOM:$multicastAddress:$multicastPort"
                 sendResponse(socket, clientAddress, clientPort, response)
@@ -124,7 +119,6 @@ class MulticastRoomServer(private val port: Int = 9876) {
                     sendResponse(socket, targetInfo.first, targetInfo.second, privateMsg)
                     println("📩 Tin riêng đến $toUser (${targetInfo.first.hostAddress}:${targetInfo.second}): $content")
 
-                    // Xác nhận cho người gửi
                     sendResponse(socket, clientAddress, clientPort, "PRIVATE_SENT:$toUser")
                 } else {
                     sendResponse(socket, clientAddress, clientPort, "ERROR:Người dùng '$toUser' không tồn tại")
@@ -132,7 +126,6 @@ class MulticastRoomServer(private val port: Int = 9876) {
             }
 
             "LEAVE" -> {
-                // data = [USERNAME]
                 if (clientRegistry.remove(data) != null) {
                     println("🚪 Hủy đăng ký: $data")
                     broadcastUserList()
@@ -141,7 +134,6 @@ class MulticastRoomServer(private val port: Int = 9876) {
             }
 
             "PING" -> {
-                // Heartbeat để kiểm tra kết nối
                 sendResponse(socket, clientAddress, clientPort, "PONG")
             }
 

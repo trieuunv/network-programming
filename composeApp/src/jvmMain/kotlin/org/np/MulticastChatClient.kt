@@ -23,7 +23,7 @@ class MulticastChatClient(private val username: String) {
         messageChannel.trySendBlocking(msg)
     }
 
-    fun requestRoomFromServer(serverHost: String = "localhost", serverPort: Int = 9876): Boolean {
+    fun requestRoomFromServer(serverHost: String = "192.168.1.4", serverPort: Int = 9876): Boolean {
         try {
             // Tạo UDP socket và GIỮ MỞ để nhận tin nhắn riêng
             udpSocket = DatagramSocket()
@@ -208,7 +208,6 @@ class MulticastChatClient(private val username: String) {
     fun leaveRoom() {
         if (!isRunning && !isListeningPrivate) return
 
-        // Gửi lệnh LEAVE đến server
         try {
             if (udpSocket != null && !udpSocket!!.isClosed) {
                 val serverAddr = InetAddress.getByName("localhost")
