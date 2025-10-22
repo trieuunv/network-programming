@@ -22,7 +22,7 @@ fun main() {
         launch(Dispatchers.IO) {
             ChatController.start()
             MailController.start()
-            MulticastRoomServer().start()
+            UDPServer().start()
         }
     }
 }

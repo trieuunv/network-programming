@@ -9,11 +9,8 @@ import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
-import org.np.ui.mailregister.MailRegisterScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.np.ui.chatmulticast.ChatMulticastScreen
-import org.np.ui.register.RegisterScreen
-import org.np.ui.setup.SetUpScreen
+import org.np.ui.chatudp.UDPChatScreen
 
 val customFont = FontFamily(
     Font("fonts/roboto.ttf")
@@ -28,7 +25,7 @@ val customTypography = Typography(
 @Preview
 fun App() {
     MaterialTheme(typography = customTypography) {
-        Navigator(ChatMulticastScreen()) {
+        Navigator(UDPChatScreen()) {
             navigator -> SlideTransition(navigator)
         }
     }
