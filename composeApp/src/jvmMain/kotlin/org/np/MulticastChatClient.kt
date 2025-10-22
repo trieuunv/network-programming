@@ -128,7 +128,7 @@ class MulticastChatClient(private val username: String) {
         }
 
         try {
-            val serverAddr = InetAddress.getByName("localhost")
+            val serverAddr = InetAddress.getByName("192.168.1.4")
             val request = "PRIVATE:$toUser|$username: $msg".toByteArray()
             val packet = DatagramPacket(request, request.size, serverAddr, 9876)
             udpSocket!!.send(packet)
