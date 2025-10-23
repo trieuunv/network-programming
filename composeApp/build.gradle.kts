@@ -33,6 +33,13 @@ kotlin {
             implementation(libs.compottie.resources)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.okhttp)
+
+            val ktorVersion = "3.0.3"
+            implementation("io.ktor:ktor-client-core:$ktorVersion")
+            implementation("io.ktor:ktor-client-okhttp:$ktorVersion") // ✅ Đổi sang OkHttp
+            implementation("io.ktor:ktor-client-logging:$ktorVersion")
+            implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -40,10 +47,19 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+
+            val javaFxVersion = "21.0.1"
+            implementation("org.openjfx:javafx-base:$javaFxVersion")
+            implementation("org.openjfx:javafx-graphics:$javaFxVersion")
+            implementation("org.openjfx:javafx-controls:$javaFxVersion")
+
+            // Nếu bạn cần WebView, hãy đảm bảo thêm nó vào:
+            implementation("org.openjfx:javafx-web:$javaFxVersion")
+            // Và module cho Swing Interop:
+            implementation("org.openjfx:javafx-swing:$javaFxVersion")
         }
     }
 }
-
 
 compose.desktop {
     application {

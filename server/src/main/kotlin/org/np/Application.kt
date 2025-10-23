@@ -29,8 +29,8 @@ fun main() {
 
 fun Application.module() {
     routing {
-        get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}")
+        staticResources("/", "static") {
+            defaultResource("index.html", "static")
         }
 
         staticFiles("/uploads", File("uploads"))
