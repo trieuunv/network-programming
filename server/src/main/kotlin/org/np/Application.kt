@@ -1,5 +1,6 @@
 package org.np
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
@@ -29,8 +30,31 @@ fun main() {
 
 fun Application.module() {
     routing {
-        staticResources("/", "static") {
-            defaultResource("index.html", "static")
+        staticResources("/static", "static")
+
+        get("/") {
+            val resourcePath = "static/index.html"
+            // Tìm và đọc file từ classpath (thư mục resources/static)
+            val resourceUrl = this::class.java.classLoader.getResource(resourcePath)
+
+            if (resourceUrl != null) {
+                val content = resourceUrl.readText()
+                call.respondText(content, ContentType.Text.Html)
+            } else {
+                call.respondText("404: Không tìm thấy file index.html", status = HttpStatusCode.NotFound)
+            }
+        }
+
+        get("/home") {
+            val resourcePath = "static/home.html"
+            val resourceUrl = this::class.java.classLoader.getResource(resourcePath)
+
+            if (resourceUrl != null) {
+                val content = resourceUrl.readText()
+                call.respondText(content, ContentType.Text.Html)
+            } else {
+                call.respondText("404: Không tìm thấy file home.html", status = HttpStatusCode.NotFound)
+            }
         }
 
         staticFiles("/uploads", File("uploads"))

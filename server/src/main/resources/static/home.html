@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Ktor Server</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Thiết lập font Inter làm font chính */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+
+<!-- Header / Navigation Bar -->
+<header class="sticky top-0 z-10 bg-gray-900/90 backdrop-blur-sm shadow-lg border-b border-indigo-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <!-- Logo/Tên dự án -->
+        <a href="#" class="text-2xl font-extrabold text-indigo-400 tracking-tight">
+            Ktor<span class="text-white">Server</span>
+        </a>
+        <!-- Nút CTA (cho Mobile/Desktop) -->
+        <a href="#features" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-xl hover:bg-indigo-500 transition duration-300 transform hover:scale-[1.02]">
+            Khám phá ngay
+        </a>
+    </div>
+</header>
+
+<main>
+    <!-- Hero Section -->
+    <section class="py-20 md:py-36 text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <span class="text-indigo-400 uppercase font-semibold text-sm tracking-widest block mb-2">Kotlin &amp; Ktor Power</span>
+        <h1 class="text-5xl sm:text-7xl font-extrabold mb-6 leading-tight">
+            Giải pháp <span class="text-indigo-400">Server-Side</span> hiện đại cho tương lai.
+        </h1>
+        <p class="text-xl text-gray-400 max-w-3xl mx-auto mb-10">
+            Xây dựng API và Ứng dụng Web hiệu năng cao, linh hoạt và dễ bảo trì bằng ngôn ngữ Kotlin mạnh mẽ cùng framework Ktor nhẹ nhàng.
+        </p>
+        <a href="#" class="inline-block px-8 py-4 text-lg font-bold bg-indigo-600 text-white rounded-xl shadow-2xl shadow-indigo-500/40 hover:bg-indigo-500 transition duration-300 transform hover:scale-105">
+            Bắt đầu dự án Ktor của bạn
+        </a>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 md:py-24 bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-white mb-4">Tại sao chọn Ktor?</h2>
+                <p class="text-lg text-gray-400">Sức mạnh của Kotlin và tính linh hoạt của một framework hiện đại.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <!-- Feature 1: Superior Performance -->
+                <div class="bg-gray-900 p-8 rounded-xl shadow-2xl border border-indigo-700/50 hover:border-indigo-500 transition duration-300">
+                    <!-- Icon (Lightning Bolt) -->
+                    <div class="w-12 h-12 flex items-center justify-center bg-indigo-600 rounded-full mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Hiệu năng vượt trội</h3>
+                    <p class="text-gray-400">Tận dụng sức mạnh của Coroutines và Kotlin để xử lý hàng ngàn yêu cầu đồng thời với độ trễ thấp nhất.</p>
+                </div>
+
+                <!-- Feature 2: Kotlin Flexibility -->
+                <div class="bg-gray-900 p-8 rounded-xl shadow-2xl border border-indigo-700/50 hover:border-indigo-500 transition duration-300">
+                    <!-- Icon (Code Brackets) -->
+                    <div class="w-12 h-12 flex items-center justify-center bg-indigo-600 rounded-full mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Code linh hoạt &amp; An toàn</h3>
+                    <p class="text-gray-400">Viết mã backend ngắn gọn, dễ đọc, và giảm thiểu lỗi với các tính năng an toàn kiểu (type safety) của Kotlin.</p>
+                </div>
+
+                <!-- Feature 3: Modular Architecture -->
+                <div class="bg-gray-900 p-8 rounded-xl shadow-2xl border border-indigo-700/50 hover:border-indigo-500 transition duration-300">
+                    <!-- Icon (Puzzle Piece) -->
+                    <div class="w-12 h-12 flex items-center justify-center bg-indigo-600 rounded-full mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.152L1.577 15.658 2.5 21l5.7-4.25L12 21l3.8-4.25 5.7 4.25-.923-5.342L22.951 2.152z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Kiến trúc Module</h3>
+                    <p class="text-gray-400">Ktor được xây dựng theo kiến trúc module, cho phép bạn chỉ thêm các tính năng (features) bạn cần, giữ cho ứng dụng gọn nhẹ.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Footer -->
+    <section class="py-16 md:py-20 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Sẵn sàng để triển khai ứng dụng của bạn?</h2>
+        <p class="text-lg text-gray-400 mb-8">Bắt đầu tích hợp giao diện này với server Kotlin Ktor của bạn ngay bây giờ!</p>
+        <a href="#" class="inline-block px-8 py-4 text-xl font-bold bg-indigo-500 text-white rounded-xl hover:bg-indigo-400 transition duration-300">
+            Xem Tài liệu Ktor
+        </a>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-900 border-t border-gray-700/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+        <p class="text-gray-500 text-sm">
+            &copy; 2025 Ktor Webserver. Được xây dựng với Kotlin và Tailwind CSS.
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>
