@@ -18,7 +18,7 @@ class UDPClient(private val username: String) {
 
     private fun report(msg: String) = messageChannel.trySendBlocking(msg)
 
-    fun connect(serverHost: String = "192.168.1.4", serverPort: Int = 9876): Boolean {
+    fun connect(serverHost: String = "172.22.112.1", serverPort: Int = 9876): Boolean {
         return try {
             serverAddr = InetAddress.getByName(serverHost)
             udpSocket = DatagramSocket()
