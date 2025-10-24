@@ -26,7 +26,7 @@ val customTypography = Typography(
 @Preview
 fun App() {
     MaterialTheme(typography = customTypography) {
-        Navigator(WebClientScreen()) {
+        Navigator(UDPChatScreen()) {
             navigator -> SlideTransition(navigator)
         }
     }
