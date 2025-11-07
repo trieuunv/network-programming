@@ -26,6 +26,7 @@ fun main() {
             ChatController.start()
             MailController.start()
             UDPServer().start()
+            startRmiServers()
         }
     }
 }

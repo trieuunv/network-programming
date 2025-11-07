@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import org.np.ui.RMI.DataSyncScreen
 import org.np.ui.chatudp.UDPChatScreen
 import org.np.ui.mailregister.MailRegisterScreen
 import org.np.ui.register.RegisterScreen
@@ -20,6 +21,7 @@ class SetUpScreen : Screen {
     override fun Content() {
         val viewModel: SetUpViewModel = viewModel()
         val navigator = LocalNavigator.currentOrThrow
+        val serverAAddress = "rmi://localhost:1100/ServerA"
 
         Row(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
@@ -44,6 +46,10 @@ class SetUpScreen : Screen {
 
                 Button(onClick = { navigator.push(WebClientScreen()) }) {
                     Text("Web Browser")
+                }
+
+                Button(onClick = { navigator.push(DataSyncScreen(serverAAddress)) }) {
+                    Text("RMI")
                 }
             }
         }
