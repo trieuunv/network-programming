@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.io.File
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -49,14 +50,21 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
 
             val javaFxVersion = "21.0.1"
-            implementation("org.openjfx:javafx-base:$javaFxVersion")
-            implementation("org.openjfx:javafx-graphics:$javaFxVersion")
-            implementation("org.openjfx:javafx-controls:$javaFxVersion")
 
-            // Nếu bạn cần WebView, hãy đảm bảo thêm nó vào:
-            implementation("org.openjfx:javafx-web:$javaFxVersion")
-            // Và module cho Swing Interop:
-            implementation("org.openjfx:javafx-swing:$javaFxVersion")
+            val platform = when {
+                org.gradle.internal.os.OperatingSystem.current().isWindows -> "win"
+                org.gradle.internal.os.OperatingSystem.current().isMacOsX -> "mac"
+                else -> "linux"
+            }
+
+            implementation("org.openjfx:javafx-base:$javaFxVersion:$platform")
+            implementation("org.openjfx:javafx-graphics:$javaFxVersion:$platform")
+            implementation("org.openjfx:javafx-controls:$javaFxVersion:$platform")
+            implementation("org.openjfx:javafx-swing:$javaFxVersion:$platform")
+            implementation("org.openjfx:javafx-web:$javaFxVersion:$platform")
+
+            implementation("org.openjfx:javafx-media:$javaFxVersion:$platform")
+
         }
     }
 }
@@ -64,6 +72,10 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "org.np.MainKt"
+
+        jvmArgs += listOf(
+            "--add-modules", "ALL-MODULE-PATH"
+        )
 
         buildTypes.release.proguard {
             isEnabled.set(false)

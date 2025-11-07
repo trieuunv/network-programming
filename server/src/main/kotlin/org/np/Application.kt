@@ -14,6 +14,8 @@ import org.example.project.MailController
 import java.io.File
 
 fun main() {
+    DatabaseFactory.init()
+
     runBlocking {
         launch(Dispatchers.Default) {
             embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)

@@ -14,6 +14,8 @@ import java.time.LocalDateTime
 import org.np.TCPClient
 import org.np.dto.MailDto
 import org.np.dto.MailSendDto
+import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 data class MailUiState(
@@ -59,13 +61,17 @@ class MailVM : ViewModel() {
     }
 
     init {
+        client.connect()
+
         client.on<List<MailDto>>("get_mails_rs") { list ->
             MainScope().launch {
                 mails.clear()
                 if (list != null) {
                     mails.addAll(
                         list.sortedByDescending {
-                            LocalDateTime.parse(it.sendAt, formatter)
+                            Instant.parse(it.sendAt)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
                         }
                     )
                 }

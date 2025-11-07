@@ -20,6 +20,12 @@ class MailRegisterVM : ViewModel() {
     private val _registerError = MutableSharedFlow<String>()
     val registerError = _registerError.asSharedFlow()
 
+    var registerFullname by mutableStateOf("")
+        private set
+
+    var registerEmail by mutableStateOf("")
+        private set
+
     var registerUsername by mutableStateOf("")
         private set
 
@@ -35,17 +41,11 @@ class MailRegisterVM : ViewModel() {
     var loginPassword by mutableStateOf("")
         private set
 
-    fun onChangeRegisterUsername(newUsername: String) {
-        registerUsername = newUsername
-    }
-
-    fun onChangeRegisterPassword(newPassword: String) {
-        registerPassword = newPassword
-    }
-
-    fun onChangeRegisterPasswordAgain(newAgainPassword: String) {
-        registerPasswordAgain = newAgainPassword
-    }
+    fun onChangeRegisterFullName(v: String) { registerFullname = v }
+    fun onChangeRegisterUsername(v: String) { registerUsername = v }
+    fun onChangeRegisterEmail(v: String) { registerEmail = v }
+    fun onChangeRegisterPassword(v: String) { registerPassword = v }
+    fun onChangeRegisterPasswordAgain(v: String) { registerPasswordAgain = v }
 
     fun onChangeLoginUsername(newUsername: String) {
         loginUsername = newUsername
@@ -56,6 +56,8 @@ class MailRegisterVM : ViewModel() {
     }
 
     init {
+        client.connect()
+
         client.on("register_success") {
             viewModelScope.launch {
                 _navigationEvent.emit("toHome")
@@ -83,7 +85,7 @@ class MailRegisterVM : ViewModel() {
 
     fun register() {
         if (registerUsername.isNotBlank() && registerPassword.isNotBlank()) {
-            client.emit("register", MailAuthDto(registerUsername, registerPassword))
+            client.emit("register", MailAuthDto(registerUsername, registerPassword, registerEmail, registerFullname))
         }
     }
 

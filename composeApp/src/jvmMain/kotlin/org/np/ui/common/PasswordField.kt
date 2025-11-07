@@ -10,7 +10,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
-fun PasswordField(text: String, value: String, onChangePassword: (String) -> Unit, error: Boolean) {
+fun PasswordField2(text: String, value: String, onChangePassword: (String) -> Unit, error: Boolean) {
     var showPassword by remember { mutableStateOf(false) }
 
     OutlinedTextField(

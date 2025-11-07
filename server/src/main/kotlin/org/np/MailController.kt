@@ -3,15 +3,19 @@ package org.example.project
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.np.ClientSocket
 import org.np.TCPServer
 import org.np.dto.MailAuthDto
 import org.np.dto.MailDto
 import org.np.dto.MailSendDto
+import org.np.model.Mail
+import org.np.model.User
 import org.np.utils.BiMap
 import org.np.utils.DateUtils
 import org.np.utils.MD5Utils
 import java.io.File
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -32,32 +36,26 @@ object MailController {
         }
 
         server.subscribe<MailAuthDto>("register") { client, data ->
-            val parentFolder = File("mail_users")
-            parentFolder.mkdirs()
+            val existed = transaction {
+                User.find { org.np.model.Users.username eq data.username }.firstOrNull()
+            }
 
-            val userFolder = File(parentFolder, data.username);
-            if (userFolder.exists()) {
+            if (existed != null) {
                 CoroutineScope(Dispatchers.IO).launch {
                     server.sendToClient(client, "register_error")
                 }
                 return@subscribe
             }
 
-            val created = userFolder.mkdirs()
-            if (!created) return@subscribe
-
-            val userFile = File(userFolder, "user.txt")
-            if (!userFile.exists()) {
-                userFile.createNewFile()
-                val now = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                userFile.writeText(
-                    """
-                    Username: ${data.username}
-                    Password: ${MD5Utils.md5(data.password)}
-                    CreatedAt: ${now.format(formatter)}
-                    """.trimIndent()
-                )
+            transaction {
+                User.new {
+                    username = data.username
+                    email = data.email ?: "${data.username}@example.com"
+                    password = MD5Utils.md5(data.password)
+                    fullName = data.username
+                    avatar = null
+                    createDate = Instant.now()
+                }
             }
 
             clients.put(data.username, client)
@@ -67,78 +65,70 @@ object MailController {
         }
 
         server.subscribe<MailAuthDto>("login") { client, data ->
-            val userFolder = File("mail_users", data.username)
-            val userFile = File(userFolder, "user.txt")
+            val user = transaction {
+                User.find { org.np.model.Users.username eq data.username }.firstOrNull()
+            }
 
-            if (!userFile.exists()) {
+            if (user == null || user.password != MD5Utils.md5(data.password)) {
                 CoroutineScope(Dispatchers.IO).launch {
                     server.sendToClient(client, "login_error")
                 }
+                return@subscribe
             }
 
-            val lines = userFile.readLines()
-            val savedUsername = lines.find { it.startsWith("Username:") }?.substringAfter("Username:")?.trim()
-            val savedPassword = lines.find { it.startsWith("Password:") }?.substringAfter("Password:")?.trim()
+            clients.put(user.username, client)
 
-            if (savedUsername == data.username && savedPassword == MD5Utils.md5(data.password)) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    server.sendToClient(client, "login_success")
-                }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    server.sendToClient(client, "login_error")
-                }
+            CoroutineScope(Dispatchers.IO).launch {
+                server.sendToClient(client, "login_success")
             }
-
-            clients.put(data.username, client)
         }
 
         server.subscribe<MailSendDto>("send_mail") { client, data ->
-            val sender = clients.getByValue(client)
-            if (sender == null) {
+            val senderUsername = clients.getByValue(client)
+            if (senderUsername == null) {
                 CoroutineScope(Dispatchers.IO).launch {
                     server.sendToClient(client, "send_error")
                 }
                 return@subscribe
             }
 
-            val receiverFolder = File("mail_users", data.receiver)
-            if (!receiverFolder.exists()) {
+            val sender = transaction {
+                User.find { org.np.model.Users.username eq senderUsername }.firstOrNull()
+            }
+
+            val receiver = transaction {
+                User.find { org.np.model.Users.username eq data.receiver }.firstOrNull()
+            }
+
+            if (sender == null || receiver == null) {
                 CoroutineScope(Dispatchers.IO).launch {
                     server.sendToClient(client, "send_error")
                 }
                 return@subscribe
             }
 
-            val mailsFolder = File(receiverFolder, "mails")
-            mailsFolder.mkdirs()
+            val mail = transaction {
+                Mail.new {
+                    this.sender = sender
+                    this.recipient = receiver
+                    this.subject = data.title
+                    this.content = data.content
+                    this.sentDate = Instant.now()
+                    this.isRead = false
+                }
+            }
 
-            val now = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
-            val mailFile = File(mailsFolder, "${now.format(formatter)}.txt")
-            val sendAt = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-
-            mailFile.writeText(
-                """
-                From   : ${sender}
-                Title  : ${data.title}
-                Content: ${data.content}
-                SentAt : ${sendAt}
-                """.trimIndent()
-            )
-
-            val receiverClient = clients.getByKey(data.receiver)
-
+            // Gửi mail real-time nếu người nhận đang online
+            val receiverClient = clients.getByKey(receiver.username)
             if (receiverClient != null) {
-                val mail = MailDto(
-                    from = sender,
-                    title = data.title,
-                    content = data.content,
-                    sendAt = sendAt
+                val mailDto = MailDto(
+                    from = sender.username,
+                    title = mail.subject,
+                    content = mail.content,
+                    sendAt = mail.sentDate.toString()
                 )
-
                 CoroutineScope(Dispatchers.IO).launch {
-                    server.sendToClient(receiverClient, "new_mail", mail)
+                    server.sendToClient(receiverClient, "new_mail", mailDto)
                 }
             }
 
@@ -149,40 +139,35 @@ object MailController {
 
         server.subscribe("get_mails") { client ->
             val username = clients.getByValue(client)
-
             if (username == null) {
                 CoroutineScope(Dispatchers.IO).launch {
                     server.sendToClient(client, "get_mails_error")
                 }
+                return@subscribe
             }
 
-            val userMailFolder = File("mail_users", username)
-            if (!userMailFolder.exists()) {
+            val user = transaction {
+                User.find { org.np.model.Users.username eq username }.firstOrNull()
+            }
+
+            if (user == null) {
                 CoroutineScope(Dispatchers.IO).launch {
                     server.sendToClient(client, "get_mails_error")
                 }
                 return@subscribe
             }
 
-            val mailsFolder = File(userMailFolder, "mails")
-            if (!mailsFolder.exists() || !mailsFolder.isDirectory) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    server.sendToClient(client, "get_mails_rs", emptyList<MailDto>())
-                }
-                return@subscribe
+            val mailList = transaction {
+                Mail.find { org.np.model.Mails.recipient eq user.id }
+                    .map {
+                        MailDto(
+                            from = it.sender.username,
+                            title = it.subject,
+                            content = it.content,
+                            sendAt = it.sentDate.toString()
+                        )
+                    }
             }
-
-            val mailList = mailsFolder.listFiles()
-                ?.filter { it.isFile }
-                ?.map { file ->
-                    val lines = file.readLines()
-                    val from = lines.find { it.startsWith("From") }?.substringAfter(":")?.trim() ?: ""
-                    val title = lines.find { it.startsWith("Title") }?.substringAfter(":")?.trim() ?: ""
-                    val content = lines.find { it.startsWith("Content") }?.substringAfter(":")?.trim() ?: ""
-                    val sendAt = lines.find { it.startsWith("SentAt") }?.substringAfter(":")?.trim() ?: ""
-
-                    MailDto(from, title, content, sendAt)
-                } ?: emptyList()
 
             CoroutineScope(Dispatchers.IO).launch {
                 server.sendToClient(client, "get_mails_rs", mailList)

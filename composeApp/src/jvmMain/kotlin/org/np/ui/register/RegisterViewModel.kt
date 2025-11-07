@@ -22,6 +22,8 @@ class RegisterViewModel : ViewModel() {
     }
 
     init {
+        client.connect()
+
         client.on<ParticipantDto>("res_register") { participant ->
             registeredUser = participant
         }

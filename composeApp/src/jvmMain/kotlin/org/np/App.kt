@@ -11,6 +11,9 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.np.ui.chatudp.UDPChatScreen
+import org.np.ui.mail.MailScreen
+import org.np.ui.mailregister.MailRegisterScreen
+import org.np.ui.setup.SetUpScreen
 import org.np.ui.webclient.WebClientScreen
 
 val customFont = FontFamily(
@@ -26,7 +29,7 @@ val customTypography = Typography(
 @Preview
 fun App() {
     MaterialTheme(typography = customTypography) {
-        Navigator(UDPChatScreen()) {
+        Navigator(SetUpScreen()) {
             navigator -> SlideTransition(navigator)
         }
     }

@@ -29,7 +29,7 @@ object TCPClient {
 
     var onConnectSuccess: (() -> Unit)? = null
 
-    fun connect(host: String = "127.0.0.1", port: Int = 9000) {
+    fun connect(host: String = Constants.HOST, port: Int = Constants.PORT) {
         if (isConnected.value) return
 
         CoroutineScope(Dispatchers.IO).launch {

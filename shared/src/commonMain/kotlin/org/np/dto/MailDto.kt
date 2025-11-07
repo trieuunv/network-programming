@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
 data class MailAuthDto(
     val username: String,
     val password: String,
+    val email: String? = null,
+    val fullName: String? = null,
+    val avatar: String? = null
 )
 
 @Serializable

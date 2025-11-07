@@ -16,7 +16,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import networkprogramming.composeapp.generated.resources.Res
 import io.github.alexzhirkevich.compottie.*
 import kotlinx.coroutines.flow.collectLatest
-import org.np.ui.common.PasswordField
+import org.np.ui.common.PasswordField2
 import org.np.ui.mail.MailScreen
 
 class MailRegisterScreen : Screen {
@@ -59,7 +59,7 @@ class MailRegisterScreen : Screen {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                org.np.ui.register.WelcomeAnimation()
+                WelcomeAnimation()
             }
 
             Column (modifier = Modifier.fillMaxWidth(.5f).fillMaxHeight().padding(20.dp)) {
@@ -110,9 +110,21 @@ fun RegisterView(viewModel: MailRegisterVM) {
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Username") })
 
-        PasswordField("Password", viewModel.registerPassword, { newValue -> viewModel.onChangeRegisterPassword(newValue) }, false)
+        OutlinedTextField(
+            value = viewModel.registerEmail,
+            onValueChange = { viewModel.onChangeRegisterEmail(it) },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Email") })
 
-        PasswordField("Password Confirm", viewModel.registerPasswordAgain, { newValue -> viewModel.onChangeRegisterPasswordAgain(newValue) }, viewModel.registerPassword != viewModel.registerPasswordAgain)
+        OutlinedTextField(
+            value = viewModel.registerFullname,
+            onValueChange = { viewModel.onChangeRegisterFullName(it) },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Full Name") })
+
+        PasswordField2("Password", viewModel.registerPassword, { newValue -> viewModel.onChangeRegisterPassword(newValue) }, false)
+
+        PasswordField2("Password Confirm", viewModel.registerPasswordAgain, { newValue -> viewModel.onChangeRegisterPasswordAgain(newValue) }, viewModel.registerPassword != viewModel.registerPasswordAgain)
 
         Button(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.register() }) {
             Text("Register")
@@ -132,7 +144,7 @@ fun LoginView(viewModel: MailRegisterVM) {
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Username") })
 
-        PasswordField("Password", viewModel.loginPassword, { newValue -> viewModel.onChangeLoginPassword(newValue) }, false)
+        PasswordField2("Password", viewModel.loginPassword, { newValue -> viewModel.onChangeLoginPassword(newValue) }, false)
 
         Button(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.login() }) {
             Text("Login")
